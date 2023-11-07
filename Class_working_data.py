@@ -8,6 +8,11 @@ import os
 import pandas as pd
 import numpy as np
 from PIL import Image
+import matplotlib.pyplot as plt
+from matplotlib.image import imread
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from keras.applications import InceptionV3
+from keras.applications.inception_v3 import preprocess_input
 from sklearn.model_selection import train_test_split
 from Class_read import Reader
 
@@ -18,13 +23,15 @@ class Datapreparation(Reader):
     def __init__(self, train_path, test_path):
         super().__init__(train_path, test_path)
         self.data_frame = None
+        self.train_gen = None
+        self.test_gen = None
+        self.val_gen = None
         
         
     def spliting_data(self, flag):
         self.extract_zip()
         self.data_frame = self.create_dataframe()
         labels = self.data_frame['label']
-        
         
         # x_train contain 80% of the original data data_frame and x_temp cointain 20% of the original data
         self.x_train, self.x_temp = train_test_split(self.data_frame, test_size=0.2, stratify=labels, random_state=42)
@@ -65,6 +72,44 @@ class Datapreparation(Reader):
         
         print('mean_size:', mean_width, 'X', mean_height) if flag else None
                 
+    def show_images(self, flag):
+        if flag:
+            plt.figure(figsize=(20, 10))
+            # Ploting cats images
+            for index in range(10):
+                plt.subplot(2, 5, index+1)
+                filename_cat = 'train/' + 'cat.' + str(index) + '.jpg'
+                image = Image.open(filename_cat)
+                image = image.resize((150, 150))
+                plt.imshow(image)
+                plt.title('Cat',fontsize=12)
+                plt.axis('off')
+            plt.show()
+            
+            plt.figure(figsize=(20, 10))
+            # Ploting dogs images
+            for index in range(10):
+                plt.subplot(2, 5, index+1)
+                filename_dog = 'train/' + 'dog.' +str(index) + '.jpg'
+                image = Image.open(filename_dog)
+                image = image.resize((150, 150))
+                plt.imshow(image)
+                plt.title('Dog', fontsize=12)
+                plt.axis('off')
+            plt.show()
+                
+    
+    def image_generator(self):
         
+        img_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
+        
+        self.train_gen = img_generator.flow_from_dataframe(self.x_train, directory='train', x_col='filename', y_col='label', target_size=(150, 150),
+                                                      batch_size=64, shuffle=False)
+    
+        self.test_gen = img_generator.flow_from_dataframe(self.x_test, directory='train', x_col='filename', y_col='label', target_size=(150, 150),
+                                                      batch_size=64, shuffle=False)
+        
+        self.val_gen = img_generator.flow_from_dataframe(self.x_val, directory='train', x_col='filename', y_col='label', target_size=(150, 150),
+                                                      batch_size=64, shuffle=False)
         
         
