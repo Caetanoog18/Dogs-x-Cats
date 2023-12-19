@@ -13,13 +13,17 @@ train_path = 'train.zip'
 test_path = 'test1.zip'
 
 data = Datapreparation(train_path, test_path)
-data.spliting_data(flag=False)
-data.get_image_median(flag=False)
-data.show_images(flag=False)
+data.spliting_data(flag=True)
+data.get_image_median(flag=True)
+data.show_images(flag=True)
 
 data.image_generator()
+data.test1_data()
 
 model = Model(data)
 model.inception()
 model.create_model()
 model.train_model(train_gen=data.train_gen, val_gen=data.val_gen)
+model.test_prediction()
+
+

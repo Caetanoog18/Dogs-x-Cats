@@ -23,13 +23,17 @@ class Datapreparation(Reader):
     def __init__(self, train_path, test_path):
         super().__init__(train_path, test_path)
         self.data_frame = None
+        self.data_frame_test = None
         self.train_gen = None
         self.test_gen = None
         self.val_gen = None
+        self.test_data = None
+        self.test1_gen = None
         
         
     def spliting_data(self, flag):
         self.extract_zip()
+        
         self.data_frame = self.create_dataframe()
         labels = self.data_frame['label']
         
@@ -113,3 +117,14 @@ class Datapreparation(Reader):
                                                       batch_size=64, shuffle=False)
         
         
+    def test1_data(self):
+        filenames = os.listdir('test1')
+        self.test_data = pd.DataFrame({"filename": filenames})
+        self.test_data['label'] = 'unknown'
+        
+        
+        
+        img_generator = ImageDataGenerator(preprocessing_function=preprocess_input)
+        
+        self.test1_gen = img_generator.flow_from_dataframe(self.test_data, directory='test1', x_col='filename', y_col='label', target_size=(150, 150),
+                                                      batch_size=64, shuffle=False)

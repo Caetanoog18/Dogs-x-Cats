@@ -15,6 +15,7 @@ class Reader:
         self.train_path = train_path
         self.test_path = test_path
         self.train_dir = 'train'
+        
     
     def extract_zip(self):
         # Verifying if directories exists:
@@ -38,5 +39,9 @@ class Reader:
         data_frame = pd.DataFrame(data)
         
         return data_frame
+    
+    
+    
+    
         
         

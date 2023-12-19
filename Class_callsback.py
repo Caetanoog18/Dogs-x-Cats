@@ -7,10 +7,10 @@ Created on Tue Nov  7 21:06:11 2023
 import tensorflow as tf
 
 class Mycallback(tf.keras.callbacks.Callback):
-  def on_epoch_end(self, epoch, logs={}):
-    
-    if logs.get('accuracy') is not None and logs.get('accuracy') > 0.99:
+    def on_epoch_end(self, epoch, logs={}):
+        current_accuracy = logs.get('accuracy')
+        print(f"\nEpoch {epoch + 1} - Accuracy: {current_accuracy}")
 
-      # Stop if threshold is met
-      print("\nLoss is lower than 0.4 so cancelling training!")
-      self.model.stop_training = True
+        if current_accuracy is not None and current_accuracy > 0.99:
+            print(f"\nAccuracy is greater than or equal to 0.99 at epoch {epoch + 1}, so stopping training!")
+            self.model.stop_training = True
